@@ -2,18 +2,113 @@ import subprocess
 import os
 import datetime
 
-ukui_list = ["debian-packages",
+ukui_list = [
+             "ukwm",
+             "ukui-biometric-auth",
+             "ukui-biometric-manager",
+             "ukui-screensaver",
+             "ukui-greeter",
+             "kylin-video",
+             "peony",
+             "ukui-panel",
              "ukui-indicators",
+             "ukui-control-center",
              "ukui-menu",
-             "ukui-menus"]
+             "debian-packages",
+             "ukui-menus",
+             "ukui-power-manager",
+             "ubuntukylin-theme",
+             "indicator-china-weather",
+             "youker-assistant",
+             "biometric-authentication",
+             "kylin-burner ",
+             "peony-extensions",
+             "ukui-session-manager",
+             "kylin-display-switch",
+             "ukui-desktop-environment",
+             "ukui-window-switch",
+             "ukui-screensaver-qt",
+             "ukui-themes",
+             "ukui-media",
+             "ukui-settings-daemon",
+             "Genisys",
+             "kylin-burner-new",
+             "ukui-desktop",
+             "ukui-screensaver-redesign",
+             "ukui-backgrounds",
+             "caja"
+             ]
 
-def pull(dir):
-    archivecmd = "git --git-dir=" + dir + "/.git pull"
+def clone(name):
+    archivecmd = "git clone https://github.com/ukui/" + name + ".git"
+    print(archivecmd)
+    process = subprocess.Popen(archivecmd, shell=True)
+    process.wait()
+    archivecmdreturncode = process.returncode
+    if archivecmdreturncode != 0:
+        print(name + " clone error")
+    print("\n")
+
+
+def pull(name):
+    os.chdir('./' + name)
+    #archivecmd = "git --git-dir=" + dir + "/.git pull"
+    archivecmd = "git pull"
     process = subprocess.Popen(archivecmd, shell=True)
     process.wait()
     archivecmdreturncode = process.returncode
     if archivecmdreturncode != 0:
         print("pull error \n")
+    os.chdir('../')
+
+def checkout(name):
+    os.chdir('./' + name)
+    archivecmd = "git checkout debian"
+    print(archivecmd)
+    process = subprocess.Popen(archivecmd, shell=True)
+    process.wait()
+    archivecmdreturncode = process.returncode
+    if archivecmdreturncode != 0:
+        print(name + " checkout error")
+    print("\n")
+    os.chdir('../')
+
+
+def debuild(name):
+    os.chdir('./' + name)
+    archivecmd = "yes | debuild -S -sa"
+    process = subprocess.Popen(archivecmd, shell=True)
+    process.wait()
+    archivecmdreturncode = process.returncode
+    if archivecmdreturncode != 0:
+        print("debuild error\n")
+    os.chdir('../')
+
+
+def clone_all():
+    for i in ukui_list:
+        clone(i)
+
+def pull_all():
+    for i in ukui_list:
+        pull(i)
+
+def debuild_all():
+    for i in ukui_list:
+        debuild(i)
+
+def checkout_all():
+    for i in ukui_list:
+        checkout(i)
+
+def mkbuilddeps(name):
+    archivecmd = 'yes | echo "zxasqw12345" | sudo -S mk-build-deps -i ' + './' + name + "/debian/control"
+    print(archivecmd)
+    process = subprocess.Popen(archivecmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    process.wait()
+    archivecmdreturncode = process.returncode
+    if archivecmdreturncode != 0:
+        print("安装依赖失败 error\n")
 
 
 def cp(namedir):
@@ -27,13 +122,7 @@ def cp(namedir):
     if archivecmdreturncode != 0:
         print("cp error \n")
 
-def dbuild():
-    archivecmd = "yes | debuild -S -sa"
-    process = subprocess.Popen(archivecmd, shell=True)
-    process.wait()
-    archivecmdreturncode = process.returncode
-    if archivecmdreturncode != 0:
-        print("debuild error\n")
+
 
 
 def listcurrentdir(path, list_name):
@@ -58,30 +147,6 @@ def replace_line(file, old_str, new_str):
         for i in range(1, len(lines)):
             f_w.write(lines[i])
 
-def mkbuilddeps(namedir):
-    archivecmd = 'yes | echo "zxasqw12345" | sudo -S mk-build-deps -i ' + namedir + "/debian/control"
-    print(archivecmd)
-    process = subprocess.Popen(archivecmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-    process.wait()
-    archivecmdreturncode = process.returncode
-    if archivecmdreturncode != 0:
-        print("安装依赖失败 error\n")
-
-def clone(name):
-    archivecmd = "git clone https://github.com/ukui/" + name + ".git"
-    print(archivecmd)
-    process = subprocess.Popen(archivecmd, shell=True)
-    process.wait()
-    archivecmdreturncode = process.returncode
-    if archivecmdreturncode != 0:
-        print(name + " clone error")
-    print("\n")
-
-def clone_all(dir):
-    os.chdir(dir)
-    for i in ukui_list:
-        clone(i)
-
 def dput(ppa):
     archivecmd = "dput " + ppa +  " *.changes"
     print(archivecmd)
@@ -91,41 +156,19 @@ def dput(ppa):
     if archivecmdreturncode != 0:
         print("dput error\n")
 
+def build_all():
+    for i in ukui_list:
+        #os.chdir('./' + i)
+        cp('./' + i)
+        print("开始修改changelog")
+        replace_line('./' + i + "/debian/changelog", ")", "-" + datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + ")")
+        print("修改quilt至native")
+        replace_line('./' + i + "/debian/source/format", "(quilt)", "(native)")
+        print("开始安装依赖\n")
+        mkbuilddeps(i)
+        print("开始debuild")
+        debuild(i)
 
 
 
 
-def main():
-    a = [];
-    listcurrentdir("/home/readlnh/workspace/ukui-auto-test", a);
-    for i in a:
-        #os.chdir(i)
-        print("开始pull " + i.split("/")[-1])
-        pull(i)
-
-        #os.chdir("../")
-
-
-    print("\n")
-
-    for i in a:
-        if(i.split("/")[-1] != "debian-packages"):
-            print("开始构建" + i.split("/")[-1])
-            os.chdir(i)
-            cp(i)
-            print("开始修改changelog")
-            replace_line(i + "/debian/changelog", ")", "-" + datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + ")")
-            print("修改quilt至native")
-            replace_line(i + "/debian/source/format", "(quilt)", "(native)")
-            print("开始安装依赖\n")
-            mkbuilddeps(i)
-            print("开始debuild")
-            dbuild()
-            print("\n\n")
-            os.chdir("../")
-
-
-
-main()
-#os.chdir("/home/readlnh/workspace/ukui-auto-test")
-#clone_all("/home/readlnh/workspace/ukui-auto-test")
