@@ -159,7 +159,7 @@ def dput(ppa):
 def build_all():
     for i in ukui_list:
         #os.chdir('./' + i)
-        cp('./' + i)
+        #cp('./' + i)
         print("开始修改changelog")
         replace_line('./' + i + "/debian/changelog", ")", "-" + datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + ")")
         print("修改quilt至native")
@@ -169,6 +169,11 @@ def build_all():
         print("开始debuild")
         debuild(i)
 
+
+def all_events():
+    pull_all()
+    build_all()
+    dput()
 
 
 
