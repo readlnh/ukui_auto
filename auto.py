@@ -147,6 +147,16 @@ def replace_line(file, old_str, new_str):
         for i in range(1, len(lines)):
             f_w.write(lines[i])
 
+def replace_key(file):
+    with open(file, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    with open(file, "w+", encoding="utf-8") as f_w:
+        for line in lines:
+            if "--" in line:
+                line = " -- readlnh <readlnh@163.com>  Thu, 06 Dec 2018 15:48:18 +0800"
+            f_w.write(line)
+
 def dput(ppa):
     archivecmd = "dput " + ppa +  " *.changes"
     print(archivecmd)
@@ -159,9 +169,13 @@ def dput(ppa):
 def build_all():
     for i in ukui_list:
         #os.chdir('./' + i)
-        #cp('./' + i)
+        if i == 'debian-packages':
+            continue
+        cp('./' + i)
         print("开始修改changelog")
-        replace_line('./' + i + "/debian/changelog", ")", "-" + datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + ")")
+        replace_line('./' + i + "/debian/changelog", ")", "~" + datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + ")")
+        print("开始修改签名")
+        replace_key('./' + i + "/debian/changelog")
         print("修改quilt至native")
         replace_line('./' + i + "/debian/source/format", "(quilt)", "(native)")
         print("开始安装依赖\n")
