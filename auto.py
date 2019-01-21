@@ -91,7 +91,9 @@ def clone_all():
 
 def pull_all():
     for i in ukui_list:
+        print("pull" + " " + i)
         pull(i)
+        print("\n")
 
 def debuild_all():
     for i in ukui_list:
@@ -172,8 +174,8 @@ def build_all():
         if i == 'debian-packages':
             continue
         cp('./' + i)
-        print("开始修改changelog")
-        replace_line('./' + i + "/debian/changelog", ")", "~" + datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + ")")
+        print("开始修改changelog内版本号")
+        replace_line('./' + i + "/debian/changelog")
         print("开始修改签名")
         replace_key('./' + i + "/debian/changelog")
         print("修改quilt至native")
