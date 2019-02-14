@@ -159,6 +159,22 @@ def replace_key(file):
                 line = " -- readlnh <readlnh@163.com>  Thu, 06 Dec 2018 15:48:18 +0800"
             f_w.write(line)
 
+
+def change_version(file):
+    with open(file, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    line = lines[0]
+    old_str = line.split("(")[1].split(")")[0]
+    if '-' in old_str:
+        new_str = old_str.split("-")[0] + "~" + datetime.datetime.now().strftime('%Y.%m.%d.%H.%M.%S')
+    else:
+        new_str = old_str.split("~")[0] + "~" + datetime.datetime.now().strftime('%Y.%m.%d.%H.%M.%S')
+    lines[0] = lines[0].replace(old_str, new_str)
+
+    with open(file, "w+", encoding="utf-8") as f_w:
+        f_w.writelines(lines)
+
 def dput(ppa):
     archivecmd = "dput " + ppa +  " *.changes"
     print(archivecmd)
@@ -175,7 +191,8 @@ def build_all():
             continue
         cp('./' + i)
         print("开始修改changelog内版本号")
-        replace_line('./' + i + "/debian/changelog")
+        change_version('./' + i + "/debian/changelog")
+        #replace_line('./' + i + "/debian/changelog")
         print("开始修改签名")
         replace_key('./' + i + "/debian/changelog")
         print("修改quilt至native")
