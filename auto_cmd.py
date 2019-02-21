@@ -15,6 +15,7 @@ if(cmd_length == 2):
     elif(sys.argv[1] == 'checkout_all'):
         auto.checkout_all()
     elif(sys.argv[1] == 'do_all'):
+        auto.clean_all()
         auto.pull_all()
         auto.build_all()
     elif(sys.argv[1] == 'do_all_debian'):

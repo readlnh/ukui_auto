@@ -3,6 +3,7 @@ import os
 import datetime
 
 ukui_list = [
+             "debian-packages",
              "ukwm",
              "ukui-biometric-auth",
              "ukui-biometric-manager",
@@ -14,7 +15,6 @@ ukui_list = [
              "ukui-indicators",
              "ukui-control-center",
              "ukui-menu",
-             "debian-packages",
              "ukui-menus",
              "ukui-power-manager",
              "ubuntukylin-theme",
@@ -36,8 +36,15 @@ ukui_list = [
              #"ukui-desktop",
              #"ukui-screensaver-redesign",
              #"ukui-backgrounds",
-             #"caja"
-             ]
+             #"caja",
+
+             "ubuntu-kylin-software-center",
+             "ubuntukylin-wallpapers",
+             "youker-assistant",
+             "ubuntu-kylin-docs",
+             "ubuntukylin-default-settings",
+             "fcitx-qimpanel",
+            ]
 
 def clone(name):
     archivecmd = "git clone https://github.com/ukui/" + name + ".git"
@@ -104,7 +111,7 @@ def checkout_all():
         checkout(i)
 
 def mkbuilddeps(name):
-    archivecmd = 'yes | echo "zxasqw12345" | sudo -S mk-build-deps -i ' + './' + name + "/debian/control"
+    archivecmd = 'yes | echo "123123" | sudo -S mk-build-deps -i ' + './' + name + "/debian/control"
     print(archivecmd)
     process = subprocess.Popen(archivecmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     process.wait()
@@ -114,7 +121,7 @@ def mkbuilddeps(name):
 
 def deletefile(namedir):
     name = namedir.split("/")[-1]
-    print(name + " 开始拷贝debian目录")
+    print(name + " 开始删除debian目录")
     archivecmd = "rm -rf " + namedir + "/debian"
     print(archivecmd)
     process = subprocess.Popen(archivecmd, shell=True)
@@ -122,6 +129,26 @@ def deletefile(namedir):
     archivecmdreturncode = process.returncode
     if archivecmdreturncode != 0:
         print("delete error \n")
+
+def delete_build():
+    archivecmd = "rm -rf *.deb *.xz *.source *.build"
+    print(archivecmd)
+    process = subprocess.Popen(archivecmd, shell=True)
+    process.wait()
+    archivecmdreturncode = process.returncode
+    if archivecmdreturncode != 0:
+        print("delete error \n")
+
+
+
+def clean_all():
+    delete_build()
+    for i in ukui_list:
+        if i == 'debian-packages':
+            continue
+        print("删除旧的debian目录\n")
+        deletefile('./' + i)
+
 
 
 
@@ -200,8 +227,6 @@ def build_all():
         #os.chdir('./' + i)
         if i == 'debian-packages':
             continue
-        print("删除旧的debian目录\n")
-        deletefile('./' + i)
         print("拷贝debian目录\n")
         cp('./' + i)
         print("修改changelog\n")
