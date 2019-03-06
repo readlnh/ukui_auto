@@ -19,7 +19,6 @@ ukui_list = [
              "ukui-power-manager",
              "ubuntukylin-theme",
              #"indicator-china-weather",
-             #"youker-assistant",
              "biometric-authentication",
              "kylin-burner",
              "peony-extensions",
@@ -28,7 +27,6 @@ ukui_list = [
              "ukui-desktop-environment",
              "ukui-window-switch",
              #"ukui-screensaver-qt",
-             #"ukui-themes",
              "ukui-media",
              "ukui-settings-daemon",
              #"Genisys",
@@ -38,12 +36,15 @@ ukui_list = [
              #"ukui-backgrounds",
              #"caja",
 
-             "ubuntu-kylin-software-center",
-             "ubuntukylin-wallpapers",
-             "youker-assistant",
-             "ubuntu-kylin-docs",
-             "ubuntukylin-default-settings",
-             "fcitx-qimpanel",
+
+             #"ubuntu-kylin-wizard",
+             #"youker-assistant",
+             #"ubuntukylin-default-settings",
+             #"ubuntu-kylin-software-center",
+             #"indicator-china-weather",
+             #"ubuntukylin-wallpapers",
+             #"ubuntu-kylin-docs",
+             #"fcitx-qimpanel",
             ]
 
 def clone(name):
@@ -59,7 +60,6 @@ def clone(name):
 
 def pull(name):
     os.chdir('./' + name)
-    #archivecmd = "git --git-dir=" + dir + "/.git pull"
     archivecmd = "git pull"
     process = subprocess.Popen(archivecmd, shell=True)
     process.wait()
@@ -75,10 +75,13 @@ def checkout(name):
     process = subprocess.Popen(archivecmd, shell=True)
     process.wait()
     archivecmdreturncode = process.returncode
-    if archivecmdreturncode != 0:
-        print(name + " checkout error")
-    print("\n")
     os.chdir('../')
+    return archivecmdreturncode
+
+    #if archivecmdreturncode != 0:
+    #    print(name + " checkout error")
+    #print("\n")
+
 
 
 def debuild(name):
@@ -130,6 +133,7 @@ def deletefile(namedir):
     if archivecmdreturncode != 0:
         print("delete error \n")
 
+
 def delete_build():
     archivecmd = "rm -rf *.deb *.xz *.source *.build"
     print(archivecmd)
@@ -153,7 +157,7 @@ def clean_all():
 
 
 
-def cp(namedir):
+def recover_debian(namedir):
     name = namedir.split("/")[-1]
     print(name + " 开始拷贝debian目录")
     archivecmd = "cp -r " + namedir + "/../debian-packages/" + name + "/debian" + " " + namedir
@@ -162,8 +166,8 @@ def cp(namedir):
     process.wait()
     archivecmdreturncode = process.returncode
     if archivecmdreturncode != 0:
-        print("cp error \n")
-
+        if(checkout(name) != 0):
+            print("找不到debian目录")
 
 
 
@@ -224,11 +228,10 @@ def dput(ppa):
 
 def build_all():
     for i in ukui_list:
-        #os.chdir('./' + i)
         if i == 'debian-packages':
             continue
         print("拷贝debian目录\n")
-        cp('./' + i)
+        recover_debian('./' + i)
         print("修改changelog\n")
         update_changelog('./' + i + "/debian/changelog")
         print("修改quilt至native")
