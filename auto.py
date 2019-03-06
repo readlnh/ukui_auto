@@ -204,6 +204,8 @@ def update_changelog(file):
     if '-' in old_str:
         new_str = old_str.split("-")[0] + ".1~" + datetime.datetime.now().strftime('%Y.%m.%d.%H.%M.%S')
         text = text.replace(old_str, new_str)
+    else:
+        text = text.replace(")", ".1~" + datetime.datetime.now().strftime('%Y.%m.%d.%H.%M.%S') + ")")
 
     if 'cosmic'in text:
         text = text.replace('cosmic', 'disco')
