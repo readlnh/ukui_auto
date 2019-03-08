@@ -22,6 +22,8 @@ if(cmd_length == 2):
         auto.pull_all()
         auto.checkout_all()
         auto.build_all()
+    elif(sys.argv[1] == 'dput_all'):
+        auto.dput_all()
 
 
 elif(cmd_length == 3):

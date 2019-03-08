@@ -141,7 +141,7 @@ def deletefile(namedir):
 
 
 def delete_build():
-    archivecmd = "rm -rf *.deb *.xz *.source *.build"
+    archivecmd = "rm -rf *.deb *.xz *.source *.build *.dsc *.buildinfo *.changes *.upload *.new"
     print(archivecmd)
     process = subprocess.Popen(archivecmd, shell=True)
     process.wait()
@@ -233,6 +233,11 @@ def dput(ppa,name):
     archivecmdreturncode = process.returncode
     if archivecmdreturncode != 0:
         print("dput error\n")
+
+
+def dput_all():
+    for i in ukui_list:
+        dput(ppa, i)
 
 def build_all():
     for i in ukui_list:
