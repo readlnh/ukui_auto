@@ -1,6 +1,8 @@
 import subprocess
 import os
 import datetime
+from threading import Thread
+import time
 
 ukui_list = [
              "debian-packages",
@@ -47,6 +49,8 @@ ukui_list = [
              #"fcitx-qimpanel",
             ]
 
+ppa = "add-apt-repository ppa:readlnh/test"
+
 def clone(name):
     archivecmd = "git clone https://github.com/ukui/" + name + ".git"
     print(archivecmd)
@@ -90,9 +94,11 @@ def debuild(name):
     process = subprocess.Popen(archivecmd, shell=True)
     process.wait()
     archivecmdreturncode = process.returncode
+    os.chdir('../')
     if archivecmdreturncode != 0:
         print("debuild error\n")
-    os.chdir('../')
+    else:
+        Thread(target=dput,args=(ppa, name))
 
 
 def clone_all():
@@ -219,8 +225,8 @@ def update_changelog(file):
         f_w.write(text)
         f_w.writelines(lines)
 
-def dput(ppa):
-    archivecmd = "dput " + ppa +  " *.changes"
+def dput(ppa,name):
+    archivecmd = "dput " + ppa +  " " + name + "*.changes"
     print(archivecmd)
     process = subprocess.Popen(archivecmd, shell=True)
     process.wait()
@@ -242,12 +248,6 @@ def build_all():
         mkbuilddeps(i)
         print("开始debuild\n")
         debuild(i)
-
-
-def all_events():
-    pull_all()
-    build_all()
-    dput()
 
 
 
