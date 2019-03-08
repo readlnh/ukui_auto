@@ -49,7 +49,7 @@ ukui_list = [
              #"fcitx-qimpanel",
             ]
 
-ppa = "add-apt-repository ppa:readlnh/test"
+ppa = "ppa:readlnh/test"
 
 def clone(name):
     archivecmd = "git clone https://github.com/ukui/" + name + ".git"
