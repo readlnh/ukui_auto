@@ -49,7 +49,7 @@ ukui_list = [
              #"fcitx-qimpanel",
             ]
 
-ppa = "ppa:readlnh/test"
+ppa = "ppa:ubuntukylin-members/ukui-daily"
 
 def clone(name):
     archivecmd = "git clone https://github.com/ukui/" + name + ".git"
@@ -98,7 +98,7 @@ def debuild(name):
     if archivecmdreturncode != 0:
         print("debuild error\n")
     else:
-        Thread(target=dput,args=(ppa, name))
+        Thread(target=dput,args=(ppa, name)).start()
 
 
 def clone_all():
