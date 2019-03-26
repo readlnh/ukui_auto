@@ -165,14 +165,15 @@ def clean_all():
 
 def recover_debian(namedir):
     name = namedir.split("/")[-1]
-    print(name + " 开始拷贝debian目录")
-    archivecmd = "cp -r " + namedir + "/../debian-packages/" + name + "/debian" + " " + namedir
-    print(archivecmd)
-    process = subprocess.Popen(archivecmd, shell=True)
-    process.wait()
-    archivecmdreturncode = process.returncode
-    if archivecmdreturncode != 0:
-        if(checkout(name) != 0):
+    print(name + " 开始检出debian目录")
+    if(checkout(name) != 0):
+        print(name + " 检出失败,开始拷贝debian目录")
+        archivecmd = "cp -r " + namedir + "/../debian-packages/" + name + "/debian" + " " + namedir
+        print(archivecmd)
+        process = subprocess.Popen(archivecmd, shell=True)
+        process.wait()
+        archivecmdreturncode = process.returncode
+        if archivecmdreturncode != 0:
             print("找不到debian目录")
 
 
