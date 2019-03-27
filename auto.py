@@ -223,6 +223,9 @@ def update_changelog(file):
     if 'experimental' in text:
         text = text.replace('experimental', 'disco')
 
+    if 'unstable' in text:
+        text = text.replace('unstable', 'disco')
+
     text = text + '\n  * Some changes.\n\n -- readlnh <readlnh@163.com>  Thu, 06 Dec 2018 15:48:18 +0800\n\n'
 
     with open(file, "w+", encoding="utf-8") as f_w:
