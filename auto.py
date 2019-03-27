@@ -74,7 +74,7 @@ def pull(name):
 
 def checkout(name):
     os.chdir('./' + name)
-    archivecmd = "git checkout debian"
+    archivecmd = "git checkout ./debian"
     print(archivecmd)
     process = subprocess.Popen(archivecmd, shell=True)
     process.wait()
@@ -219,6 +219,9 @@ def update_changelog(file):
 
     if 'bionic' in text:
         text = text.replace('bionic', 'disco')
+
+    if 'experimental' in text:
+        text = text.replace('experimental', 'disco')
 
     text = text + '\n  * Some changes.\n\n -- readlnh <readlnh@163.com>  Thu, 06 Dec 2018 15:48:18 +0800\n\n'
 
